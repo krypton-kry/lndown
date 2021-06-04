@@ -1,0 +1,20 @@
+[package]
+name = "lndown"
+version = "0.1.0"
+authors = ["krypton-kry"]
+edition = "2018"
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+serde_json = "1.0"
+epub-builder = "0.4"
+scraper = "0.12.0"
+clap = "2.33.3"
+prettytable-rs = "0.8.0"
+log = "0.4.0"
+futures = "0.3.15"
+indicatif = "0.16.2"
+
+[dev-dependencies]
+env_logger = "0.8.3"

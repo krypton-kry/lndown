@@ -3,8 +3,6 @@ use indicatif::ProgressBar;
 use log::{debug, info};
 use reqwest::header::USER_AGENT;
 use scraper::Html;
-use std::fs::OpenOptions;
-use std::io::prelude::*;
 use std::path::Path;
 
 use super::epub_util;
@@ -18,7 +16,7 @@ pub struct Chapter {
 }
 
 //TODO : implement local cache check
-pub async fn scrape_novel(url: String) -> Result<(), reqwest::Error> {
+pub async fn scrape_novel(url: String, threads: usize) -> Result<(), reqwest::Error> {
     let res = reqwest::Client::new()
         .get(url)
         .header(
@@ -68,21 +66,21 @@ pub async fn scrape_novel(url: String) -> Result<(), reqwest::Error> {
     //write list of chapters in order -> will be useful in creating epub i guess ?
     //FIXME : After implementing local cahce check
 
-    if Path::new(format!("./{}/info.html", name).as_str()).exists() {
-        std::fs::remove_file(format!("./{}/info.html", name)).unwrap();
-    } //we do this since we append stuff and if ran again can mess up stuff
+    // if Path::new(format!("./{}/info.html", name).as_str()).exists() {
+    //     std::fs::remove_file(format!("./{}/info.html", name)).unwrap();
+    // } //we do this since we append stuff and if ran again can mess up stuff
 
-    chapters.clone().into_iter().for_each(|x| {
-        let mut file = OpenOptions::new()
-            .append(true)
-            .create(true)
-            .open(format!("./{}/info.html", x.novel_name))
-            .unwrap();
+    // chapters.clone().into_iter().for_each(|x| {
+    //     let mut file = OpenOptions::new()
+    //         .append(true)
+    //         .create(true)
+    //         .open(format!("./{}/info.html", x.novel_name))
+    //         .unwrap();
 
-        if let Err(e) = writeln!(file, "<p>{}</p><br/>", x.name.as_str()) {
-            eprintln!("Couldn't write to file: {}", e);
-        }
-    });
+    //     if let Err(e) = writeln!(file, "<p>{}</p><br/>", x.name.as_str()) {
+    //         eprintln!("Couldn't write to file: {}", e);
+    //     }
+    // });
 
     //progress bar
     let pb = ProgressBar::new(chapters.len() as u64);
@@ -93,16 +91,16 @@ pub async fn scrape_novel(url: String) -> Result<(), reqwest::Error> {
         pb.inc(1);
         save_html(chapter).await
     }))
-    .buffer_unordered(5)
+    .buffer_unordered(threads)
     .collect::<Vec<_>>();
 
     tasks.await;
     pb.finish();
 
     println!("Downloaded! Binding books into epub");
-
-    //TODO: Create a epub with the chapterlist
     epub_util::create_epub(chap).unwrap();
+    println!("Epub created!");
+
     Ok(())
 }
 

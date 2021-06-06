@@ -15,7 +15,7 @@ const LNDOWN: &str = "\n\u{2591}\u{2588}\u{2591}\u{2591}\u{2591}\u{2588}\u{2580}
 async fn main() -> Result<(), reqwest::Error> {
     println!("{:}", LNDOWN);
     let matches = App::new("Light Novel Downloader")
-        .version("0.1")
+        .version("0.2")
         .arg(
             Arg::with_name("query")
                 .short("q")
@@ -32,6 +32,14 @@ async fn main() -> Result<(), reqwest::Error> {
                 .help("Url of Lightnovel to Download")
                 .takes_value(true),
         )
+        .arg(
+            Arg::with_name("threads")
+                .short("t")
+                .long("threads")
+                .required(false)
+                .help("No. of threads to be used (default : 5)\n(Please use with caution as site *will* block increased requests)")
+                .takes_value(true),
+        )
         .get_matches();
 
     if matches.is_present("query") && matches.is_present("url") {
@@ -39,25 +47,56 @@ async fn main() -> Result<(), reqwest::Error> {
     }
 
     if !matches.is_present("query") && !matches.is_present("url") {
-        println!("Please use either --url or --query");
+        println!("Please use lndown --help to view usage");
     }
 
     if matches.is_present("query") {
         let t = search(matches.value_of("query").unwrap()).await?;
         info!("Novel Url : {}{:#?}", URL, t);
 
-        scrape::scrape_novel(format!("{}{}", URL, t)).await?;
+        if matches.is_present("threads") {
+            scrape::scrape_novel(
+                format!("{}{}", URL, t),
+                matches
+                    .value_of("threads")
+                    .unwrap()
+                    .to_string()
+                    .parse::<usize>()
+                    .unwrap(),
+            )
+            .await?;
+        } else {
+            scrape::scrape_novel(format!("{}{}", URL, t), 5).await?;
+        }
     }
 
     if matches.is_present("url") {
         info!("Novel Url : {:#?}", matches.value_of("url").unwrap());
-        scrape::scrape_novel(matches.value_of("url").unwrap().to_string()).await?;
+
+        if matches.is_present("threads") {
+            scrape::scrape_novel(
+                matches.value_of("url").unwrap().to_string(),
+                matches
+                    .value_of("threads")
+                    .unwrap()
+                    .to_string()
+                    .parse::<usize>()
+                    .unwrap(),
+            )
+            .await?;
+        } else {
+            scrape::scrape_novel(matches.value_of("url").unwrap().to_string(), 5).await?;
+        }
     }
 
     Ok(())
 }
+
 /*
-TODO : non interactive query search
+TODO : add proxy
+TODO : add number of chapters in selection screen
+TODO : Check status code before adding to chapter list
+TODO : non interactive query search & multiple downloads (download everything in search result)
 TODO : use path given by user
-TODO : add a framwork so as to create modules for different sites
+TODO : add modularity
 */

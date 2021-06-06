@@ -1,5 +1,7 @@
 extern crate prettytable;
 
+use std::process::exit;
+
 use prettytable::*;
 use reqwest::header::USER_AGENT;
 
@@ -31,6 +33,12 @@ pub async fn search(query: &str) -> Result<String, reqwest::Error> {
         r.append(&mut x.text().collect::<Vec<_>>());
         r.append(&mut vec![x.value().attr("href").unwrap()]);
     });
+
+    //check if no results found
+    if r.len() == 0 {
+        println!("No results found");
+        exit(1);
+    }
 
     //print out LightNovel names and author names
     let mut table = Table::new();

@@ -15,7 +15,7 @@ const LNDOWN: &str = "\n\u{2591}\u{2588}\u{2591}\u{2591}\u{2591}\u{2588}\u{2580}
 async fn main() -> Result<(), reqwest::Error> {
     println!("{:}", LNDOWN);
     let matches = App::new("Light Novel Downloader")
-        .version("0.2")
+        .version("0.3")
         .arg(
             Arg::with_name("query")
                 .short("q")
@@ -99,4 +99,8 @@ TODO : Check status code before adding to chapter list
 TODO : non interactive query search & multiple downloads (download everything in search result)
 TODO : use path given by user
 TODO : add modularity
+TODO : add print details and exit (-d)
+TODO : print more details after selecting book [search.rs]
+TODO : add pagination to search
+TODO : create only html option
 */

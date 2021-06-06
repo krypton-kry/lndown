@@ -1,6 +1,6 @@
 [package]
 name = "lndown"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["krypton-kry"]
 edition = "2018"
 
@@ -11,10 +11,10 @@ serde_json = "1.0"
 epub-builder = "0.4"
 scraper = "0.12.0"
 clap = "2.33.3"
-prettytable-rs = "0.8.0"
 log = "0.4.0"
 futures = "0.3.15"
 indicatif = "0.16.2"
+dialoguer = "0.8.0"
 
 [dev-dependencies]
 env_logger = "0.8.3"

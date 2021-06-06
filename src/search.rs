@@ -1,11 +1,10 @@
-extern crate prettytable;
-
-use std::process::exit;
-
-use prettytable::*;
+use dialoguer::console::Term;
+use dialoguer::{theme::ColorfulTheme, Select};
+use log::debug;
 use reqwest::header::USER_AGENT;
-
 use scraper::Html;
+use std::convert::TryFrom;
+use std::process::exit;
 
 pub async fn search(query: &str) -> Result<String, reqwest::Error> {
     let res = reqwest::Client::new()
@@ -40,31 +39,31 @@ pub async fn search(query: &str) -> Result<String, reqwest::Error> {
         exit(1);
     }
 
-    //print out LightNovel names and author names
-    let mut table = Table::new();
-    table.add_row(row!["", Frbc->"LightNovel", Frbc->"Author"]);
+    let mut names: Vec<String> = vec![];
 
-    for i in (0..r.len()).step_by(3) {
-        //yeah i know there's probably a better way to do this
-        if i == 0 {
-            table.add_row(row![Frbc->i + 1, Frbc->&r[i], Frbc->&r[i + 1]]);
-        } else {
-            table.add_row(row![Frbc->(i / 3) + 1, Frbc->&r[i], Frbc->&r[i + 1]]);
+    &r.clone()
+        .into_iter()
+        .step_by(3)
+        .for_each(|x| names.push(x.to_string()));
+
+    let selection = Select::with_theme(&ColorfulTheme::default())
+        .items(&names)
+        .default(0)
+        .interact_on_opt(&Term::stderr())
+        .unwrap();
+
+    match selection {
+        Some(index) => {
+            //i'm disappointing dam*it
+            if index == 0 {
+                Ok(r[2].to_string())
+            } else {
+                let res = ((i32::try_from(index).unwrap() * 3) + 2) as usize;
+                debug!("link chosen :{}", r[res]);
+
+                Ok(r[res].to_string())
+            }
         }
+        None => todo!(),
     }
-
-    table.printstd();
-    println!("Select Novel To Download : ");
-
-    //get user input
-    let mut input = String::new();
-    std::io::stdin()
-        .read_line(&mut input)
-        .expect("Error: Unable to read user input");
-    input.truncate(input.len() - 1);
-
-    let i = (input.parse::<i32>().unwrap() * 3) - 1;
-    let result = r.get(i as usize).unwrap();
-
-    Ok(result.to_string())
 }

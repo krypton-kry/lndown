@@ -63,18 +63,16 @@ pub async fn scrape_novel(url: String, threads: usize) -> Result<(), reqwest::Er
         std::fs::create_dir(Path::new(format!("./{}", name).as_str())).unwrap();
     }
 
-    //write list of chapters in order -> will be useful in creating epub i guess ?
-    //FIXME : After implementing local cahce check
-
-    // if Path::new(format!("./{}/info.html", name).as_str()).exists() {
-    //     std::fs::remove_file(format!("./{}/info.html", name)).unwrap();
+    //I guess this is useless and should be used if only html is needed
+    // if Path::new(format!("./{}/index.html", name).as_str()).exists() {
+    //     std::fs::remove_file(format!("./{}/index.html", name)).unwrap();
     // } //we do this since we append stuff and if ran again can mess up stuff
 
     // chapters.clone().into_iter().for_each(|x| {
     //     let mut file = OpenOptions::new()
     //         .append(true)
     //         .create(true)
-    //         .open(format!("./{}/info.html", x.novel_name))
+    //         .open(format!("./{}/index.html", x.novel_name))
     //         .unwrap();
 
     //     if let Err(e) = writeln!(file, "<p>{}</p><br/>", x.name.as_str()) {

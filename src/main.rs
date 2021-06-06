@@ -6,7 +6,10 @@ pub mod epub_util;
 mod search;
 use log::info;
 use search::search;
-pub mod scrape;
+
+pub mod scraper;
+#[path = "sources/wuxiaworldco.rs"]
+mod wuxiaworldco;
 
 const URL: &str = "https://www.wuxiaworld.co";
 const LNDOWN: &str = "\n\u{2591}\u{2588}\u{2591}\u{2591}\u{2591}\u{2588}\u{2580}\u{2588}\u{2591}\u{2588}\u{2580}\u{2584}\u{2591}\u{2588}\u{2580}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2580}\u{2588}\n\u{2591}\u{2588}\u{2591}\u{2591}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2584}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\n\u{2591}\u{2580}\u{2580}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2580}\u{2591}\u{2591}\u{2580}\u{2580}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}";
@@ -55,7 +58,7 @@ async fn main() -> Result<(), reqwest::Error> {
         info!("Novel Url : {}{:#?}", URL, t);
 
         if matches.is_present("threads") {
-            scrape::scrape_novel(
+            scraper::scrape_novel(
                 format!("{}{}", URL, t),
                 matches
                     .value_of("threads")
@@ -66,7 +69,7 @@ async fn main() -> Result<(), reqwest::Error> {
             )
             .await?;
         } else {
-            scrape::scrape_novel(format!("{}{}", URL, t), 5).await?;
+            scraper::scrape_novel(format!("{}{}", URL, t), 5).await?;
         }
     }
 
@@ -74,7 +77,7 @@ async fn main() -> Result<(), reqwest::Error> {
         info!("Novel Url : {:#?}", matches.value_of("url").unwrap());
 
         if matches.is_present("threads") {
-            scrape::scrape_novel(
+            scraper::scrape_novel(
                 matches.value_of("url").unwrap().to_string(),
                 matches
                     .value_of("threads")
@@ -85,7 +88,7 @@ async fn main() -> Result<(), reqwest::Error> {
             )
             .await?;
         } else {
-            scrape::scrape_novel(matches.value_of("url").unwrap().to_string(), 5).await?;
+            scraper::scrape_novel(matches.value_of("url").unwrap().to_string(), 5).await?;
         }
     }
 
@@ -103,4 +106,5 @@ TODO : add print details and exit (-d)
 TODO : print more details after selecting book [search.rs]
 TODO : add pagination to search
 TODO : create only html option
+TODO : add authenication
 */

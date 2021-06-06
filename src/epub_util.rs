@@ -1,6 +1,6 @@
 extern crate epub_builder;
 
-use super::scrape::Chapter;
+use super::scraper::Novel;
 use epub_builder::EpubBuilder;
 use epub_builder::EpubContent;
 use epub_builder::ReferenceType;
@@ -8,12 +8,12 @@ use epub_builder::ZipLibrary;
 
 //TODO : sort chapters into 100 per volume
 //TODO : create a coverpage with image
-pub fn create_epub(chapter_list: Vec<Chapter>) -> epub_builder::Result<()> {
-    let novel_name = &chapter_list.clone().get(0).unwrap().novel_name.to_string();
+pub fn create_epub(novel: Novel) -> epub_builder::Result<()> {
+    let novel_name = &novel.metadata.title;
     let mut builder = EpubBuilder::new(ZipLibrary::new()?)?;
 
-    chapter_list.into_iter().for_each(|x| {
-        let con = std::fs::read_to_string(format!("./{}/{}", x.novel_name, x.name))
+    novel.chapters.into_iter().for_each(|x| {
+        let con = std::fs::read_to_string(format!("./{}/{}", novel_name, x.name))
             .expect("Unable to read file");
 
         let content = format!(

@@ -40,7 +40,7 @@ OPTIONS:
 - [ ] check status code before adding to chapter list
 - [ ] non interactive query search & multiple downloads (download everything in search result)
 - [ ] use path given by user
-- [ ] add modularity
+- [x] add modularity
 - [ ] add print details and exit (-d)
 - [ ] print more details after selecting book [search.rs]
 - [ ] add pagination to search

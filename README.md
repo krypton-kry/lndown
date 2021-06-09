@@ -8,7 +8,7 @@ Creates a epub for a given lightnovel.
 ░█░░░█░█░█░█░█░█░█▄█░█░█
 ░▀▀▀░▀░▀░▀▀░░▀▀▀░▀░▀░▀░▀
 
-Light Novel Downloader 0.3
+Light Novel Downloader 0.3.1
 
 USAGE:
     lndown [OPTIONS]

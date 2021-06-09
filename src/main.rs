@@ -7,9 +7,8 @@ mod search;
 use log::info;
 use search::search;
 
-pub mod scraper;
-#[path = "sources/wuxiaworldco.rs"]
-mod wuxiaworldco;
+pub mod crawler;
+use crate::crawler::wuxiaworldco;
 
 const URL: &str = "https://www.wuxiaworld.co";
 const LNDOWN: &str = "\n\u{2591}\u{2588}\u{2591}\u{2591}\u{2591}\u{2588}\u{2580}\u{2588}\u{2591}\u{2588}\u{2580}\u{2584}\u{2591}\u{2588}\u{2580}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2580}\u{2588}\n\u{2591}\u{2588}\u{2591}\u{2591}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\u{2584}\u{2588}\u{2591}\u{2588}\u{2591}\u{2588}\n\u{2591}\u{2580}\u{2580}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2580}\u{2591}\u{2591}\u{2580}\u{2580}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}\u{2591}\u{2580}";
@@ -18,7 +17,7 @@ const LNDOWN: &str = "\n\u{2591}\u{2588}\u{2591}\u{2591}\u{2591}\u{2588}\u{2580}
 async fn main() -> Result<(), reqwest::Error> {
     println!("{:}", LNDOWN);
     let matches = App::new("Light Novel Downloader")
-        .version("0.3")
+        .version("0.3.1")
         .arg(
             Arg::with_name("query")
                 .short("q")
@@ -58,7 +57,7 @@ async fn main() -> Result<(), reqwest::Error> {
         info!("Novel Url : {}{:#?}", URL, t);
 
         if matches.is_present("threads") {
-            scraper::scrape_novel(
+            crawler::scrape_novel(
                 format!("{}{}", URL, t),
                 matches
                     .value_of("threads")
@@ -69,7 +68,7 @@ async fn main() -> Result<(), reqwest::Error> {
             )
             .await?;
         } else {
-            scraper::scrape_novel(format!("{}{}", URL, t), 5).await?;
+            crawler::scrape_novel(format!("{}{}", URL, t), 5).await?;
         }
     }
 
@@ -77,7 +76,7 @@ async fn main() -> Result<(), reqwest::Error> {
         info!("Novel Url : {:#?}", matches.value_of("url").unwrap());
 
         if matches.is_present("threads") {
-            scraper::scrape_novel(
+            crawler::scrape_novel(
                 matches.value_of("url").unwrap().to_string(),
                 matches
                     .value_of("threads")
@@ -88,7 +87,7 @@ async fn main() -> Result<(), reqwest::Error> {
             )
             .await?;
         } else {
-            scraper::scrape_novel(matches.value_of("url").unwrap().to_string(), 5).await?;
+            crawler::scrape_novel(matches.value_of("url").unwrap().to_string(), 5).await?;
         }
     }
 
@@ -101,7 +100,6 @@ TODO : add number of chapters in selection screen
 TODO : Check status code before adding to chapter list
 TODO : non interactive query search & multiple downloads (download everything in search result)
 TODO : use path given by user
-TODO : add modularity
 TODO : add print details and exit (-d)
 TODO : print more details after selecting book [search.rs]
 TODO : add pagination to search

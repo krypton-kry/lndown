@@ -1,6 +1,6 @@
 extern crate epub_builder;
 
-use super::scraper::Novel;
+use crate::crawler::Novel;
 use epub_builder::EpubBuilder;
 use epub_builder::EpubContent;
 use epub_builder::ReferenceType;
